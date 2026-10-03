@@ -1,7 +1,7 @@
 ---
 title: "R Data Importing"
 subtitle: "PSYC 259: Principles of Data Science"
-author: "John Franchak"
+author: "John Franchak & Holly O'Rourke"
 output:
   xaringan::moon_reader:
     lib_dir: libs
