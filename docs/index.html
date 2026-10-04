@@ -41,9 +41,9 @@ class: center, middle, inverse, title-slide
 
 - File organization and naming conventions
 
-- read.csv vs. read_csv
+- Importing CSV files
 
-- Importing multiple files
+- Importing single and multiple files
  
 - Useful readr capabilities
 
@@ -54,6 +54,9 @@ class: center, middle, inverse, title-slide
 ]
 .footnote[.small[.bold[Last updated: 2026-10-04]]]
 
+---
+class: inverse, center, middle
+# Part 1: File Organization and Naming
 ---
 
 # File Organization: Why is it Important?
@@ -80,21 +83,24 @@ class: center, middle, inverse, title-slide
 
 - Directories: Where your files "live" 
 
-  - Local: They live on your machine
+  - **Local**: They live on your machine
     
       - /Users/jonah/Desktop
   
-  - Cloud: They live on a remote server hosted by a third party
+  - **Cloud**: They live on a remote server hosted by a third party
     
       - /Users/jonah/Library/CloudStorage/GoogleDrive-jonahf@gmail.com
 
-- Always maintain local directories when using git and Github
+- Always maintain **local** directories when using git and Github
+
+- We can use simple R code to create directories as well:
+    - `if (!dir.exists("data_cleaned")) dir.create("data_cleaned")` 
 
 ---
 
 # BAD File Organization
 
-Why is this bad?
+Why is this bad? Would you know where to find the data and analyses for the published paper?
 
 .pull-left[
 &lt;img src="badfileorg1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
@@ -132,6 +138,22 @@ goodfileorg/
 
 ---
 
+# Absolute vs. Relative File Paths
+
+- This is a major consideration for our studies due to data privacy/IRB requirements
+
+- Data are often stored with secure mapped drives that lead to different, machine-specific **absolute** file paths
+  - Ex. Jonah's data is stored at /Users/jonah/UniversityDrive/IRB_Study_123/participant_data.csv
+  - Liz's data is stored at /Users/lizdiaz/SecureResearch/IRB_Study_123/participant_data.csv
+
+- You probably are familiar with using absolute file paths to import data in R 
+
+- With RStudio Projects, we can use only **relative** paths to ensure the code works for everyone on the project
+  - Ex. data/participant_data.csv is the reference for everyone in the R code
+  - More on this in a bit...
+
+---
+
 # Naming Conventions
 
 - How you name your files within a single subdirectory
@@ -148,14 +170,15 @@ goodfileorg/
 
 # Machine Readable
 
-- Use alphanumeric characters
-  - Latin alphabet letters (abc), Arabic numerals (123)
+- Use Latin alphabet letters (abc), Arabic numerals (123), alphanumeric only (no special characters)
+
+- Add leading zeros based on your expected count (ex. n = 200 -&gt; 001, 002... 200)
 
 - Spacing options: 
   - Underscores (snake_case)
-  -Capital letters (CamelCase)
-  -Hyphens (kebab-case)
-  -No spaces or special characters
+  - Capital letters (CamelCase)
+  - Hyphens (kebab-case)
+  - No spaces or special characters
 
 - Choose case sensitivity wisely! 
   - R is a case-sensitive language and uses snake_case for naming
@@ -193,39 +216,84 @@ goodfileorg/
       - 03_figures.R
   
 - You can also use version numbers as suffixes (when needed)
-  - Ex. V01, V02, etc. (instead of final, final_final, final_forreal)
+  - Ex. V01, V02, V03, etc. (instead of final, final_final, final_forreal)
 
 ---
 
-# BAD Naming Conventions
+# Bad vs. Good Naming Conventions
 
----
 
-# GOOD Naming Conventions
+
+
+``` r
+print(bad_data)
+```
+
+```
+   x  y  a g t s1 s2
+1 23 14 19 F 1  7 12
+2 31 21 22 M 0  4 18
+3 27 17 20 F 1  9 15
+```
+
+
+
+
+``` r
+print(good_data)
+```
+
+```
+  participant_age depression_score anxiety_score gender therapy_currently
+1              23               14            19      F                 1
+2              31               21            22      M                 0
+3              27               17            20      F                 1
+  pretest_score posttest_score
+1             7             12
+2             4             18
+3             9             15
+```
 
 ---
 
 # Complex Naming Schema Example
 
+&lt;img src="complexnames.png" alt="" width="88%" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse, center, middle
+# Part 2: Importing Data
 ---
 
-# read_csv versus read.csv 
+# Data Importing: Base R and tidyverse
+
+- Base R refers to the built-in functions in R
+
+- tidyverse is a collection of packages that are specifically developed for data cleaning and visualization
+  - Ex. dplyr, readr, ggplot2, tidyr
+  - install.packages("tidyverse")
+
+- Either method can be used for data cleaning and visualization, tidyverse can sometimes be more efficient
+ 
+---
+
+# Importing a CSV File
 
 .pull-left[
-- read.csv is base R, read_csv is tidyverse
+- read.csv is base R, read_csv is tidyverse (readr package)
 
-- read_csv is faster
+  - read_csv is faster
 
-- read_csv makes fewer assumptions about your data
+  - read_csv makes fewer assumptions about your data
 
-- read_csv can combine multiple data files into one
+  - read_csv can combine multiple data files into one
 ]
 
 .pull-right[
 The following examples use .csv (comma separated value) files in the data_raw directory
 &lt;img src="dir.png" alt="" width="1109" height="400px" style="display: block; margin: auto;" /&gt;
 ]
-
+---
 count: false
  
 
@@ -399,8 +467,9 @@ ds &lt;- read_csv('data_raw/vocab16.csv')
 
 
 
----
 
+- "tibble" is a tidyverse data frame (keeps data frames predictable in tidyverse)
+---
 count: false
  
 
@@ -603,6 +672,7 @@ ds13.5 &lt;- read_csv('data_raw/vocab13.5.csv')
 print(ds13.5)
 
 # bind_rows can append tibbles together
+# functionally merges the three data frames by column
 *ds_all &lt;- bind_rows(ds12, ds12.5, ds13.5)
 ```
 ]
@@ -651,6 +721,7 @@ ds13.5 &lt;- read_csv('data_raw/vocab13.5.csv')
 print(ds13.5)
 
 # bind_rows can append tibbles together
+# functionally merges the three data frames by column
 ds_all &lt;- bind_rows(ds12, ds12.5, ds13.5)
 *print(ds_all)
 ```
@@ -757,9 +828,9 @@ count: false
 .panel1-import_multiple-auto[
 
 ``` r
-# read_csv can read a list of files!
+# read_csv can import multiple files all at once!
 
-# Get list of files
+# Create object that stores all the file names and directories
 *full_file_names &lt;- list.files('data_raw', full.names = TRUE)
 ```
 ]
@@ -775,12 +846,12 @@ count: false
 .panel1-import_multiple-auto[
 
 ``` r
-# read_csv can read a list of files!
+# read_csv can import multiple files all at once!
 
-# Get list of files
+# Create object that stores all the file names and directories
 full_file_names &lt;- list.files('data_raw', full.names = TRUE)
 
-# Pass the list to read_csv to read all of them into a single tibble
+# Pass the names to read_csv to read all of them into a single tibble
 *ds_all &lt;- read_csv(full_file_names)
 ```
 ]
@@ -796,12 +867,12 @@ count: false
 .panel1-import_multiple-auto[
 
 ``` r
-# read_csv can read a list of files!
+# read_csv can import multiple files all at once!
 
-# Get list of files
+# Create object that stores all the file names and directories
 full_file_names &lt;- list.files('data_raw', full.names = TRUE)
 
-# Pass the list to read_csv to read all of them into a single tibble
+# Pass the names to read_csv to read all of them into a single tibble
 ds_all &lt;- read_csv(full_file_names)
 *print(ds_all)
 ```
@@ -862,7 +933,7 @@ ds_all &lt;- read_csv(full_file_names)
 
 # Why did we need full.names? 
 .pull-left[
-- `list.files('data_raw')` gives `vocab12.csv`, `vocab12.5.csv`...which aren't in the current working directory
+- `list.files('data_raw')` gives `vocab12.csv`, `vocab12.5.csv`... which are only the file names
 
 - `list.files('data_raw', full.names = TRUE)` gives the relative path including the directory:
 
@@ -882,7 +953,7 @@ count: false
 
 ``` r
 # Use the fs package to have more control over files
-# install.packages("fs") # If needed  # install.packages("fs") # If needed
+# install.packages("fs") if needed  # install.packages("fs") if needed
 
 library(fs)
 files &lt;- dir_ls("data_raw")
@@ -912,7 +983,7 @@ count: false
 
 ``` r
 # Use the fs package to have more control over files
-# install.packages("fs") # If needed  # install.packages("fs") # If needed
+# install.packages("fs") if needed  # install.packages("fs") if needed
 
 library(fs)
 files &lt;- dir_ls("data_raw")
@@ -940,7 +1011,7 @@ count: false
 
 ``` r
 # Use the fs package to have more control over files
-# install.packages("fs") # If needed  # install.packages("fs") # If needed
+# install.packages("fs") if needed  # install.packages("fs") if needed
 
 library(fs)
 files &lt;- dir_ls("data_raw")
@@ -966,7 +1037,7 @@ count: false
 
 ``` r
 # Use the fs package to have more control over files
-# install.packages("fs") # If needed  # install.packages("fs") # If needed
+# install.packages("fs") if needed  # install.packages("fs") if needed
 
 library(fs)
 files &lt;- dir_ls("data_raw")
@@ -1133,7 +1204,54 @@ ds_all$age_round &lt;- round(ds_all$age)
 # See the results
 print(ds_all)
 
-# Let's write the combined data to disk
+# Create the data_cleaned directory if it doesn't exist yet
+*if (!dir.exists("data_cleaned")) dir.create("data_cleaned")
+```
+]
+ 
+.panel2-tibble-auto[
+
+```
+# A tibble: 440 × 4
+     age word         ppt_name age_round
+   &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;        &lt;dbl&gt;
+ 1  12.5 dad          Jonah           12
+ 2  12   book         Jonah           12
+ 3  12   ball         Jonah           12
+ 4  12   bye bye      Jonah           12
+ 5  13.5 cat          Jonah           14
+ 6  14.5 socks/shoes  Jonah           14
+ 7  14.5 dog (animal) Jonah           14
+ 8  14   baby         Jonah           14
+ 9  15.5 cheese       Jonah           16
+10  15.5 turkey       Jonah           16
+# ℹ 430 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-tibble-auto[
+
+``` r
+# Let's add some things and write a combined output
+
+# Create a new column in a dataset
+ds_all$ppt_name &lt;- "Jonah"
+
+# Create a calculated column
+ds_all$age_round &lt;- round(ds_all$age)
+
+# See the results
+print(ds_all)
+
+# Create the data_cleaned directory if it doesn't exist yet
+if (!dir.exists("data_cleaned")) dir.create("data_cleaned")
+
+# Let's export the combined data as a new dataset
+
 *write_csv(ds_all, file = "data_cleaned/vocab_combined.csv")
 ```
 ]

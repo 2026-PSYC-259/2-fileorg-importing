@@ -62,9 +62,9 @@ library(icons) #https://fontawesome.com/v5.15/icons?d=gallery&p=2&m=free
 
 - File organization and naming conventions
 
-- read.csv vs. read_csv
+- Importing CSV files
 
-- Importing multiple files
+- Importing single and multiple files
  
 - Useful readr capabilities
 
@@ -75,6 +75,9 @@ library(icons) #https://fontawesome.com/v5.15/icons?d=gallery&p=2&m=free
 ]
 .footnote[.small[.bold[Last updated: `r Sys.Date()`]]]
 
+---
+class: inverse, center, middle
+# Part 1: File Organization and Naming
 ---
 
 # File Organization: Why is it Important?
@@ -103,21 +106,24 @@ knitr::include_graphics("hw1.png")
 
 - Directories: Where your files "live" 
 
-  - Local: They live on your machine
+  - **Local**: They live on your machine
     
       - /Users/jonah/Desktop
   
-  - Cloud: They live on a remote server hosted by a third party
+  - **Cloud**: They live on a remote server hosted by a third party
     
       - /Users/jonah/Library/CloudStorage/GoogleDrive-jonahf@gmail.com
 
-- Always maintain local directories when using git and Github
+- Always maintain **local** directories when using git and Github
+
+- We can use simple R code to create directories as well:
+    - `if (!dir.exists("data_cleaned")) dir.create("data_cleaned")` 
 
 ---
 
 # BAD File Organization
 
-Why is this bad?
+Why is this bad? Would you know where to find the data and analyses for the published paper?
 
 .pull-left[
 ```{r, echo=FALSE, out.width="80%", fig.align="center"}
@@ -161,6 +167,22 @@ knitr::include_graphics("goodfileorg.jpg")
 
 ---
 
+# Absolute vs. Relative File Paths
+
+- This is a major consideration for our studies due to data privacy/IRB requirements
+
+- Data are often stored with secure mapped drives that lead to different, machine-specific **absolute** file paths
+  - Ex. Jonah's data is stored at /Users/jonah/UniversityDrive/IRB_Study_123/participant_data.csv
+  - Liz's data is stored at /Users/lizdiaz/SecureResearch/IRB_Study_123/participant_data.csv
+
+- You probably are familiar with using absolute file paths to import data in R 
+
+- With RStudio Projects, we can use only **relative** paths to ensure the code works for everyone on the project
+  - Ex. data/participant_data.csv is the reference for everyone in the R code
+  - More on this in a bit...
+
+---
+
 # Naming Conventions
 
 - How you name your files within a single subdirectory
@@ -177,14 +199,15 @@ knitr::include_graphics("goodfileorg.jpg")
 
 # Machine Readable
 
-- Use alphanumeric characters
-  - Latin alphabet letters (abc), Arabic numerals (123)
+- Use Latin alphabet letters (abc), Arabic numerals (123), alphanumeric only (no special characters)
+
+- Add leading zeros based on your expected count (ex. n = 200 -> 001, 002... 200)
 
 - Spacing options: 
   - Underscores (snake_case)
-  -Capital letters (CamelCase)
-  -Hyphens (kebab-case)
-  -No spaces or special characters
+  - Capital letters (CamelCase)
+  - Hyphens (kebab-case)
+  - No spaces or special characters
 
 - Choose case sensitivity wisely! 
   - R is a case-sensitive language and uses snake_case for naming
@@ -222,32 +245,79 @@ knitr::include_graphics("goodfileorg.jpg")
       - 03_figures.R
   
 - You can also use version numbers as suffixes (when needed)
-  - Ex. V01, V02, etc. (instead of final, final_final, final_forreal)
+  - Ex. V01, V02, V03, etc. (instead of final, final_final, final_forreal)
 
 ---
 
-# BAD Naming Conventions
+# Bad vs. Good Naming Conventions
 
----
+```{r badnames-setup, include = FALSE}
+bad_data <- data.frame(
+  x = c(23, 31, 27),
+  y = c(14, 21, 17),
+  a = c(19, 22, 20),
+  g = c("F", "M", "F"),
+  t = c(1, 0, 1),
+  s1 = c(7, 4, 9),
+  s2 = c(12, 18, 15)
+)
+```
 
-# GOOD Naming Conventions
+```{r badnames, echo = TRUE}
+print(bad_data)
+```
+
+```{r goodnames-setup, include = FALSE}
+good_data <- data.frame(
+  participant_age = c(23, 31, 27),
+  depression_score = c(14, 21, 17),
+  anxiety_score = c(19, 22, 20),
+  gender = c("F", "M", "F"),
+  therapy_currently = c(1, 0, 1),
+  pretest_score = c(7, 4, 9),
+  posttest_score = c(12, 18, 15)
+)
+```
+
+```{r goodnames, echo = TRUE}
+print(good_data)
+```
 
 ---
 
 # Complex Naming Schema Example
 
+```{r, echo=FALSE, out.width="88%", fig.align="center"}
+knitr::include_graphics("complexnames.png")
+```
+
+---
+class: inverse, center, middle
+# Part 2: Importing Data
 ---
 
-# read_csv versus read.csv 
+# Data Importing: Base R and tidyverse
+
+- Base R refers to the built-in functions in R
+
+- tidyverse is a collection of packages that are specifically developed for data cleaning and visualization
+  - Ex. dplyr, readr, ggplot2, tidyr
+  - install.packages("tidyverse")
+
+- Either method can be used for data cleaning and visualization, tidyverse can sometimes be more efficient
+ 
+---
+
+# Importing a CSV File
 
 .pull-left[
-- read.csv is base R, read_csv is tidyverse
+- read.csv is base R, read_csv is tidyverse (readr package)
 
-- read_csv is faster
+  - read_csv is faster
 
-- read_csv makes fewer assumptions about your data
+  - read_csv makes fewer assumptions about your data
 
-- read_csv can combine multiple data files into one
+  - read_csv can combine multiple data files into one
 ]
 
 .pull-right[
@@ -256,7 +326,7 @@ The following examples use .csv (comma separated value) files in the data_raw di
 knitr::include_graphics("dir.png")
 ```
 ]
-
+---
 `r chunk_reveal("functions", break_type = "auto", widths = c(4, 1))`
 
 ```{r functions, include = FALSE}
@@ -269,8 +339,9 @@ library(readr) #for read_csv
 ds <- read_csv('data_raw/vocab16.csv')
 print(ds)
 ```
----
 
+- "tibble" is a tidyverse data frame (keeps data frames predictable in tidyverse)
+---
 `r chunk_reveal("import_sequential", break_type = "auto", widths = c(2, 1))`
 
 ```{r import_sequential, include = FALSE}
@@ -285,6 +356,7 @@ ds13.5 <- read_csv('data_raw/vocab13.5.csv')
 print(ds13.5)
 
 # bind_rows can append tibbles together
+# functionally merges the three data frames by column
 ds_all <- bind_rows(ds12, ds12.5, ds13.5)
 print(ds_all)
 ```
@@ -303,12 +375,12 @@ list.files('data_raw', full.names = TRUE)
 `r chunk_reveal("import_multiple", break_type = "auto", float = "none", widths = c(5, 1))`
 
 ```{r import_multiple, include = FALSE}
-# read_csv can read a list of files!
+# read_csv can import multiple files all at once!
 
-# Get list of files
+# Create object that stores all the file names and directories
 full_file_names <- list.files('data_raw', full.names = TRUE)
 
-# Pass the list to read_csv to read all of them into a single tibble
+# Pass the names to read_csv to read all of them into a single tibble
 ds_all <- read_csv(full_file_names)
 print(ds_all)
 ```
@@ -317,7 +389,7 @@ print(ds_all)
 
 # Why did we need full.names? 
 .pull-left[
-- `list.files('data_raw')` gives `vocab12.csv`, `vocab12.5.csv`...which aren't in the current working directory
+- `list.files('data_raw')` gives `vocab12.csv`, `vocab12.5.csv`... which are only the file names
 
 - `list.files('data_raw', full.names = TRUE)` gives the relative path including the directory:
 
@@ -334,7 +406,7 @@ print(ds_all)
 
 ```{r fs, include = FALSE}
 # Use the fs package to have more control over files
-# install.packages("fs") # If needed
+# install.packages("fs") if needed
 
 library(fs)
 files <- dir_ls("data_raw")
@@ -360,7 +432,11 @@ ds_all$age_round <- round(ds_all$age)
 # See the results
 print(ds_all)
 
-# Let's write the combined data to disk
+# Create the data_cleaned directory if it doesn't exist yet
+if (!dir.exists("data_cleaned")) dir.create("data_cleaned")
+
+# Let's export the combined data as a new dataset
+
 write_csv(ds_all, file = "data_cleaned/vocab_combined.csv")
 ```
 
