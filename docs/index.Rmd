@@ -39,7 +39,10 @@ style_mono_accent(
   extra_css = list(
     ".remark-slide-content h1" = list("margin-bottom" = "0.3em"),
     ".pull-left"  = list(width = "49%"),
-    ".pull-right" = list(width = "49%")
+    ".pull-right" = list(width = "49%"),
+    ".col-text" = list(float = "left",  width = "30%"),
+    ".col-img"  = list(float = "right", width = "68%"),
+    ".col-img ~ *" = list(clear = "both")   # keeps later content below the columns
   )
 )
 ```
@@ -71,6 +74,7 @@ library(icons) #https://fontawesome.com/v5.15/icons?d=gallery&p=2&m=free
 `r icons::fontawesome("github")` Follow along from the [Github repo](https://github.com/2026-PSYC-259/2-fileorg-importing)
 ]
 .footnote[.small[.bold[Last updated: `r Sys.Date()`]]]
+
 ---
 
 # File Organization: Why is it Important?
@@ -92,10 +96,23 @@ library(icons) #https://fontawesome.com/v5.15/icons?d=gallery&p=2&m=free
 knitr::include_graphics("hw1.png")
 ```
 ]
----
-# Directories
 
-- Windows
+---
+
+# File Organization: Directories
+
+- Directories: Where your files "live" 
+
+  - Local: They live on your machine
+    
+      - /Users/jonah/Desktop
+  
+  - Cloud: They live on a remote server hosted by a third party
+    
+      - /Users/jonah/Library/CloudStorage/GoogleDrive-jonahf@gmail.com
+
+- Always maintain local directories when using git and Github
+
 ---
 
 # BAD File Organization
@@ -117,26 +134,30 @@ knitr::include_graphics("badfileorg2.png")
 ---
 
 # GOOD File Organization
-
+.pull-left[
 ```text
 goodfileorg/
-|-- README.md
-|-- my_study.Rproj
-|-- code/
-|   |-- 01_clean_data.R
-|   |-- 02_analysis.R
-|   +-- 03_figures.R
-|-- data/
-|   |-- raw.csv
-|   +-- processed.csv
-+-- manuscript/
-    |-- draft_text.docx
-    |-- figures.docx
-    +-- tables.docx
+├── README.md
+├── my_study.Rproj
+├── code/
+│   ├── 01_clean_data.R
+│   ├── 02_analysis.R
+│   └── 03_figures.R
+├── data/
+│   ├── raw.csv
+│   └── processed.csv
+└── manuscript/
+    ├── draft_text.docx
+    ├── figures.docx
+    └── tables.docx
 ```
----
+]
 
-# File Org for a Complex Project
+.pull-right[
+```{r, echo=FALSE, out.width="115%", fig.align="center"}
+knitr::include_graphics("goodfileorg.jpg")
+```
+]
 
 ---
 
@@ -151,6 +172,57 @@ goodfileorg/
   2. Human readable
 
   3. Can be "default" sorted
+
+---
+
+# Machine Readable
+
+- Use alphanumeric characters
+  - Latin alphabet letters (abc), Arabic numerals (123)
+
+- Spacing options: 
+  - Underscores (snake_case)
+  -Capital letters (CamelCase)
+  -Hyphens (kebab-case)
+  -No spaces or special characters
+
+- Choose case sensitivity wisely! 
+  - R is a case-sensitive language and uses snake_case for naming
+
+- "Jonah's Data.csv" -> ?
+
+---
+
+# Human Readable
+
+- Consistency is key
+  - Ex. Choose snake case and use it for ALL files in a project (scripts, data, etc.)
+
+- File names should be concise, but detailed enough that another person can understand
+  - Leave out unnecessary info like software 
+  - Ex. "Jonah's R Data Cleaning Script.R" -> "data_cleaning.R"
+
+- Document your naming convention in a README file
+  - Your future self and collaborators will thank you!
+
+---
+
+# Default Sorting
+
+- Before you start your workflow, decide on a sorting system that will make it easy for you to access your files with code
+
+- Two typical sorting systems for prefixes:
+  - Chronological
+      - 2026-01-01_id001_task1.csv
+      - 2026-01-01_id002_task1.csv
+      - 2026-01-03_id001_task1.csv
+  - Logical
+      - 01_cleaning.R
+      - 02_analysis.R 
+      - 03_figures.R
+  
+- You can also use version numbers as suffixes (when needed)
+  - Ex. V01, V02, etc. (instead of final, final_final, final_forreal)
 
 ---
 

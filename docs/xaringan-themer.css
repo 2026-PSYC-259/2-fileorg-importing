@@ -304,3 +304,14 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
 .pull-right {
   width: 49%;
 }
+.col-text {
+  float: left;
+  width: 30%;
+}
+.col-img {
+  float: right;
+  width: 68%;
+}
+.col-img ~ * {
+  clear: both;
+}
