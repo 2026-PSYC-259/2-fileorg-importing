@@ -118,6 +118,21 @@ knitr::include_graphics("badfileorg2.png")
 
 # GOOD File Organization
 
+goodfileorg/
+├── README.md
+├── my_study.Rproj
+├── code/
+│   ├── 01_clean_data.R
+│   ├── 02_analysis.R
+│   └── 03_figures.R
+├── data/
+│   ├── raw.csv
+│   └── processed.csv
+└── manuscript/
+    ├── draft_text.docx
+    ├── figures.docx
+    └── tables.docx
+
 ---
 
 # File Org for a Complex Project
