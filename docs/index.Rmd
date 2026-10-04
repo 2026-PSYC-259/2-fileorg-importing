@@ -118,6 +118,7 @@ knitr::include_graphics("badfileorg2.png")
 
 # GOOD File Organization
 
+```text
 goodfileorg/
 ├── README.md
 ├── my_study.Rproj
@@ -132,6 +133,7 @@ goodfileorg/
     ├── draft_text.docx
     ├── figures.docx
     └── tables.docx
+```
 
 ---
 
