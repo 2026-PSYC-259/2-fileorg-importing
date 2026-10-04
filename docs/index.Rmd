@@ -93,19 +93,23 @@ knitr::include_graphics("hw1.png")
 ```
 ]
 ---
+# Directories
+
+- Windows
+---
 
 # BAD File Organization
 
-- Why is this bad?
+Why is this bad?
 
 .pull-left[
-```{r, echo=FALSE, out.width="85%", fig.align="center"}
+```{r, echo=FALSE, out.width="80%", fig.align="center"}
 knitr::include_graphics("badfileorg1.png")
 ```
 ]
 
 .pull-right[
-```{r, echo=FALSE, out.width="85%", fig.align="center"}
+```{r, echo=FALSE, out.width="80%", fig.align="center"}
 knitr::include_graphics("badfileorg2.png")
 ```
 ]
