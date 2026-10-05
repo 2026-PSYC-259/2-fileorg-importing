@@ -61,17 +61,17 @@ library(icons) #https://fontawesome.com/v5.15/icons?d=gallery&p=2&m=free
 # Outline for Today
 
 - File organization and naming conventions
+  * Absolute and relative paths
 
 - Importing CSV files
-
-- Importing single and multiple files
+  * Importing single and multiple files
  
-- Useful readr capabilities
+- Useful importing capabilities
 
 - Other data import packages
 
 .content-box-blue[
-`r icons::fontawesome("github")` Follow along from the [Github repo](https://github.com/2026-PSYC-259/2-fileorg-importing)
+`r icons::fontawesome("github")` Follow along from this week's [Github repo](https://github.com/2026-PSYC-259/2-fileorg-importing)
 ]
 .footnote[.small[.bold[Last updated: `r Sys.Date()`]]]
 
@@ -212,7 +212,7 @@ knitr::include_graphics("goodfileorg.jpg")
 - Choose case sensitivity wisely! 
   - R is a case-sensitive language and uses snake_case for naming
 
-- "Jonah's Data.csv" -> ?
+- `Jonah's Data.csv` -> ?
 
 ---
 
@@ -296,12 +296,99 @@ class: inverse, center, middle
 # Part 2: Importing Data
 ---
 
+# Where does R look for files?
+
+- **Working directory**: The folder R is currently "working" from 
+
+- A **relative** path starts from the working directory
+  * Ex. `data_raw/vocab16.csv`
+
+- An **absolute** path starts from the root of the drive
+  * Ex. `/Users/jonah/project/data_raw/vocab16.csv`
+
+```r
+getwd()       # Where is R looking right now?
+list.files()  # What files can R see from the getwd() directory?
+```
+- We need to make sure that the working directory contains the files for our current project
+---
+
+# RStudio Projects set the working directory for you
+
+- Opening the `.Rproj` file sets the working directory to the project folder
+
+- Everyone who opens it gets the **same** starting point, so the same relative paths work on every machine
+
+- Let's check this out with the repository we forked last week
+  * The "1_package_setup" repo has both `.R` and `.Rproj` files
+
+---
+
+class: inverse, center, middle
+# Quick Tutorial
+---
+
+# Step 1: Open the project on your local machine
+
+.pull-left[
+- Open GitHub desktop 
+
+- Select "1_package_setup" as current repository
+
+- Select "Open in RStudio"
+]
+
+.pull-right[
+```{r, echo=FALSE,  out.width="115%", fig.align="center"}
+knitr::include_graphics("step1_gh.png")
+```
+]
+
+---
+
+# Step 2: Relative paths with the 'here' package
+
+.pull-left[
+- `here()` finds the project root from the `.Rproj` file and builds paths from it
+
+- Everyone writes the same line of code, `here()` makes it work on any machine
+
+- Open a new R script to try it out
+
+- Compare with your neighbor; what do you see?
+]
+
+.pull-right[
+```r
+# install.packages("here") if needed
+library(here)
+
+# the project root
+# absolute, differs per computer
+here()      
+
+# root + file name
+here("package_install.Rproj")     
+
+# TRUE from any folder in the project
+file.exists(here("package_install.Rproj"))  
+```
+]
+
+--
+
+.content-box-blue[
+Different computers print different roots, but `here("package_install.Rproj")` is the same code for both
+]
+
+---
+
 # Data Importing: Base R and tidyverse
 
 - Base R refers to the built-in functions in R
 
 - tidyverse is a collection of packages that are specifically developed for data cleaning and visualization
-  - Ex. dplyr, readr, ggplot2, tidyr
+  - Ex. dplyr, readr, ggplot2, tidyr, etc.
   - install.packages("tidyverse")
 
 - Either method can be used for data cleaning and visualization, tidyverse can sometimes be more efficient
@@ -393,12 +480,26 @@ print(ds_all)
 
 - `list.files('data_raw', full.names = TRUE)` gives the relative path including the directory:
 
-`/data_raw/vocab12.csv`, `/data_raw/vocab12.5.csv`
+`data_raw/vocab12.csv`, `data_raw/vocab12.5.csv`
 ]
 
 .pull-right[
 ![an image](dir.png)
 ]
+
+---
+
+# fs Package
+
+- We can use the fs package to have more control over what we see of files
+
+- dir_ls(): List files with location
+
+- path_file(): Extract file names from a path string
+
+- path_ext_remove(): Remove the final file extension from a filename
+
+- path_abs(): Show absolute version of a given file path
 
 ---
 
@@ -415,7 +516,6 @@ print(path_file(files)) #ROTATE
 print(path_ext_remove(path_file(files))) #ROTATE
 print(path_abs(files)) #ROTATE
 ```
-
 ---
 
 `r chunk_reveal("tibble", break_type = "auto", widths = c(1.5, 1))`
@@ -442,17 +542,19 @@ write_csv(ds_all, file = "data_cleaned/vocab_combined.csv")
 
 ---
 
-# Useful readr capabilities
+# Useful readr read_csv() capabilities
 
-- read_csv(), read_tsv(), read_delim() are tailored to different inputs (also write_csv(), write_tsv(), write_delim() for saving data)
-
-- Important read_*() arguments are:
+- Important read_csv() arguments:
   * `col_names = TRUE` (reads column names from first line by default)
   * `col_names = FALSE` (treats the first line as data)
   * `col_names = c("col1name", "col2name")` (to specify the names)
   * `col_types = NULL` (by default, guesses the data type)
   * `col_types = "ccDin"` (specify types character/date/integer/number)
   * `skip = 10` (skip the first 10 lines)
+
+- Can also be used with read_tsv() (tab-delimited), read_delim() (character-delimited, general)
+
+- write_csv(), write_tsv(), write_delim() export/save data
 
 ---
 
@@ -471,7 +573,7 @@ print(ds)
 ```
 
 ---
-# More options
+# More Resources
 
 - tidyverse data import "cheatsheets"
 
@@ -493,7 +595,7 @@ background-image: url("readr-cheatsheet2.png")
 background-size: contain
 
 ---
-# Data import homework assignment
+# Data Import Homework Assignment
 
 - Use the GitHub repo link below to clone the project (no need to fork) to your own user account and then to work locally on your own computer.
 
@@ -504,7 +606,7 @@ background-size: contain
 - Push your answers to a public Github repo, and turn in the homework by entering the link to the repo on Canvas
 
 .content-box-blue[
-`r icons::fontawesome("github")` Homework [Github repo](https://github.com/2025-PSYC-259/259-langbasics-importing-hw)
+`r icons::fontawesome("github")` Homework [Github repo](https://github.com/2026-PSYC-259/2-fileorg-importing-hw)
 ]
 
 <!-- adjust font size in this css code chunk, currently 80 -->
